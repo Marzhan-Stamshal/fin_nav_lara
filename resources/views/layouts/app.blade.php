@@ -7,6 +7,7 @@
     <title>{{ $title ?? 'Fin Navigation (Laravel)' }}</title>
     <style>
         :root { color-scheme: light; }
+        *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111827; background: linear-gradient(135deg, #eff6ff, #e0e7ff); min-height: 100vh; }
         a { color: inherit; text-decoration: none; }
@@ -20,6 +21,7 @@
         .profile-pill { display:inline-flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e5e7eb; padding:6px 10px; border-radius:999px; color:#374151; font-size:13px; font-weight:600; }
         .card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 10px 25px -10px rgba(0, 0, 0, .2); }
         .grid { display: grid; gap: 12px; }
+        .grid > * { min-width: 0; }
         .grid-4 { grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); }
         .btn { border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
         .btn-primary { background: #4f46e5; color: #fff; }
@@ -32,6 +34,7 @@
         .btn-light { background: #e5e7eb; color: #111827; }
         .btn-light:hover { background: #d1d5db; }
         .field { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; color: #111827; }
+        textarea.field { resize: vertical; }
         .field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, .15); }
         select.field option { color: #111827; }
         input::placeholder, textarea::placeholder { color: #9ca3af; opacity: 1; }
