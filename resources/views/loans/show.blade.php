@@ -4,14 +4,16 @@
 @php($timeline = $summary['timeline'])
 <div class="card" style="margin-bottom:14px;">
     <div class="flex" style="justify-content:space-between;">
-        <h1 style="margin:0;">{{ $loan->title ?: $loan->bank_name }}</h1>
+        <div>
+            <a href="{{ route('dashboard') }}" style="color:#4f46e5;font-weight:600;">← Назад</a>
+            <h1 style="margin:8px 0 0;font-size:30px;color:#1f2937;">{{ $loan->title ?: $loan->bank_name }}</h1>
+        </div>
         <div class="flex">
             @if($loan->status !== 'закрыт')
                 <form method="post" action="{{ route('loans.mark-paid', $loan) }}">@csrf<button class="btn btn-green" type="submit">Оплачено за месяц</button></form>
                 <form method="post" action="{{ route('loans.close-early', $loan) }}" onsubmit="return confirm('Закрыть кредит досрочно?')">@csrf<button class="btn btn-orange" type="submit">Закрыла досрочно</button></form>
             @endif
             <a class="btn btn-light" href="{{ route('loans.edit', $loan) }}">Редактировать</a>
-            <a class="btn btn-primary" href="{{ route('dashboard') }}">Назад</a>
         </div>
     </div>
     <p class="muted">{{ $loan->bank_name }} • {{ $loan->loan_type }} • {{ $loan->status }}</p>

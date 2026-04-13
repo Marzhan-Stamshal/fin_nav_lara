@@ -5,7 +5,10 @@
     @php($prevMonth = $baseMonth->copy()->subMonth()->format('Y-m'))
     @php($nextMonth = $baseMonth->copy()->addMonth()->format('Y-m'))
     <div class="flex" style="justify-content:space-between; margin-bottom:10px;">
-        <h1 style="margin:0;">График оплат</h1>
+        <div>
+            <a href="{{ route('payments.index') }}" style="color:#4f46e5;font-weight:600;">← Назад к платежам</a>
+            <h1 style="margin:8px 0 0;font-size:30px;color:#1f2937;">График оплат</h1>
+        </div>
         <div class="flex">
             <a class="btn btn-light" href="{{ route('payments.schedule', ['month' => $prevMonth]) }}">←</a>
             <strong style="padding:8px 4px;">{{ $baseMonth->translatedFormat('F Y') }}</strong>

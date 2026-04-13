@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="card" style="margin-bottom:14px;">
+    <a href="{{ route('dashboard') }}" style="color:#4f46e5;font-weight:600;">← Назад</a>
+    <h1 style="margin:8px 0 0;font-size:30px;color:#1f2937;">Настройки аккаунта</h1>
+    <p style="color:#6b7280;margin:8px 0 0;">Профиль, пароль и личные параметры для расчётов.</p>
+</div>
+
 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:12px;">
     <div class="card">
         <h2 style="margin-top:0;">Профиль</h2>

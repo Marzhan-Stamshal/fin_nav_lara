@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="card" style="margin-bottom:14px;">
-    <h1 style="margin-top:0;">Стратегия погашения</h1>
+    <a href="{{ route('dashboard') }}" style="color:#4f46e5;font-weight:600;">← Назад</a>
+    <h1 style="margin:8px 0 0;font-size:30px;color:#1f2937;">Стратегии досрочного погашения</h1>
+    <p style="color:#6b7280;margin:8px 0 0;">Сравните варианты закрытия долгов и рефинансирования.</p>
+</div>
+
+<div class="card" style="margin-bottom:14px;">
+    <h2 style="margin-top:0;">Параметры расчёта</h2>
     <form method="get" class="grid" style="gap:12px;">
         <div>
             <strong>Выберите кредиты для расчета</strong>
@@ -68,7 +74,7 @@
 
 @if ($extraImpact)
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Сценарий +X в этом месяце</h2>
+    <h2 style="margin-top:0;">Сценарий: если внесу +X в этом месяце</h2>
     <p><strong>Целевой кредит:</strong> {{ $extraImpact['loan']->title ?: $extraImpact['loan']->bank_name }}</p>
     <p>Было досрочно: {{ number_format($extraImpact['beforeEarly'], 0, ',', ' ') }} ₸</p>
     <p>Станет досрочно: {{ number_format($extraImpact['afterEarly'], 0, ',', ' ') }} ₸</p>
@@ -77,7 +83,7 @@
 @endif
 
 @if ($refinance)
-<div class="card">
+<div class="card" style="margin-bottom:14px;">
     <h2 style="margin-top:0;">Сценарий рефинансирования</h2>
     <p>Новый кредит: {{ number_format($refinance['amount'], 0, ',', ' ') }} ₸ на {{ $refinance['term'] }} мес. под {{ $refinance['rate'] }}%</p>
     <p>Новый платеж/мес: <strong>{{ number_format($refinance['newMonthly'], 0, ',', ' ') }} ₸</strong></p>

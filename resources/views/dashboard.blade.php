@@ -1,11 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .dash-head { margin-bottom: 14px; }
+    .dash-head h1 { margin: 0; font-size: 32px; color: #1f2937; }
+    .dash-head p { margin: 6px 0 0; color: #6b7280; }
+    .metric-card { border: 1px solid #e5e7eb; }
+    .metric-title { color: #6b7280; font-size: 12px; margin-bottom: 6px; }
+    .metric-value { font-size: 30px; font-weight: 700; color: #1f2937; }
+    .metric-value-green { color: #047857; }
+    .section-title { margin-top: 0; font-size: 24px; color: #1f2937; }
+    .table-soft tbody tr:hover { background: #f9fafb; }
+</style>
+
+<div class="card dash-head">
+    <h1>Обзор кредитов</h1>
+    <p>Контролируйте выплаты, экономию и план закрытия в одном месте.</p>
+</div>
+
 <div class="grid grid-4" style="margin-bottom:14px;">
-    <div class="card"><div class="muted">ДОСРОЧНО СЕЙЧАС</div><div style="font-size:26px;font-weight:700;">{{ number_format($totalEarly, 0, ',', ' ') }} ₸</div></div>
-    <div class="card"><div class="muted">ПОЛНОСТЬЮ ДО КОНЦА</div><div style="font-size:26px;font-weight:700;">{{ number_format($totalFull, 0, ',', ' ') }} ₸</div></div>
-    <div class="card"><div class="muted">ЭКОНОМИЯ ПРИ ЗАКРЫТИИ СЕЙЧАС</div><div style="font-size:26px;font-weight:700;color:#047857;">{{ number_format($totalSavings, 0, ',', ' ') }} ₸</div></div>
-    <div class="card"><div class="muted">ПЛАТЕЖ В МЕСЯЦ (АКТИВНЫЕ)</div><div style="font-size:26px;font-weight:700;">{{ number_format($allActiveMonthly, 0, ',', ' ') }} ₸</div></div>
+    <div class="card metric-card"><div class="metric-title">Досрочно сейчас</div><div class="metric-value">{{ number_format($totalEarly, 0, ',', ' ') }} ₸</div></div>
+    <div class="card metric-card"><div class="metric-title">Полностью до конца</div><div class="metric-value">{{ number_format($totalFull, 0, ',', ' ') }} ₸</div></div>
+    <div class="card metric-card"><div class="metric-title">Экономия при закрытии сейчас</div><div class="metric-value metric-value-green">{{ number_format($totalSavings, 0, ',', ' ') }} ₸</div></div>
+    <div class="card metric-card"><div class="metric-title">Платёж в месяц (активные)</div><div class="metric-value">{{ number_format($allActiveMonthly, 0, ',', ' ') }} ₸</div></div>
 </div>
 
 <div class="card" style="margin-bottom:14px;">
@@ -39,7 +56,7 @@
 
 @if($upcomingByBankDate->count())
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Платежи за 30 дней</h2>
+    <h2 class="section-title">Платежи за 30 дней</h2>
     @foreach($upcomingByBankDate as $item)
         <div class="flex" style="justify-content:space-between; border:1px solid #e5e7eb; border-radius:8px; padding:8px; margin-bottom:6px;">
             <span>{{ $item['bankName'] }} • {{ $item['dateLabel'] }}</span>
@@ -51,7 +68,7 @@
 
 @if($paymentReminders->count())
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Напоминания 3/1 день</h2>
+    <h2 class="section-title">Напоминания 3/1 день</h2>
     @foreach($paymentReminders as $item)
         <div class="flex" style="justify-content:space-between; border:1px solid #e5e7eb; border-radius:8px; padding:8px; margin-bottom:6px;">
             <div>
@@ -66,7 +83,7 @@
 
 @if($recommendedLoan)
 <div class="card" style="margin-bottom:14px; border:1px solid #a7f3d0;">
-    <h2 style="margin-top:0;">Рекомендация месяца</h2>
+    <h2 class="section-title">Рекомендация месяца</h2>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
         <div>
             <strong>{{ $recommendedLoan['loan']->title ?: $recommendedLoan['loan']->bank_name }}</strong>
@@ -86,7 +103,7 @@
 @endif
 
 <div class="card" id="analytics-section" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Аналитика долгов</h2>
+    <h2 class="section-title">Аналитика долгов</h2>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
         <div>
             <h3 style="margin-top:0;">По банкам</h3>
@@ -114,7 +131,7 @@
 </div>
 
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Сценарий: если внесу +X в этом месяце</h2>
+    <h2 class="section-title">Сценарий: если внесу +X в этом месяце</h2>
     <form method="get" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:end;">
         <input type="hidden" name="bank" value="{{ $filterBank }}">
         <input type="hidden" name="group" value="{{ $filterGroup }}">
@@ -168,7 +185,7 @@
     </style>
 
     <div class="flex" style="justify-content:space-between; margin-bottom:10px;">
-        <h2 style="margin:0;">Ваши кредиты ({{ $visible->count() }})</h2>
+        <h2 style="margin:0;font-size:24px;color:#1f2937;">Ваши кредиты ({{ $visible->count() }})</h2>
         <div class="flex">
             <a href="{{ route('loans.export.csv') }}" class="btn btn-light">Экспорт CSV</a>
             <a href="{{ route('loans.export.sample-csv') }}" class="btn btn-light">Шаблон CSV</a>
@@ -282,7 +299,7 @@
         <span class="muted" style="margin-left:auto;">Платеж/мес (выборочно): <strong id="selectedMonthly">0 ₸</strong></span>
     </div>
 
-    <div class="only-desktop" style="overflow:auto;">
+    <div class="only-desktop table-soft" style="overflow:auto;">
         <table>
             <thead>
                 <tr>
@@ -389,7 +406,7 @@
 </div>
 
 <div class="card" id="calendar-section" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Календарь оплат</h2>
+    <h2 class="section-title">Календарь оплат</h2>
     @php($prevMonth = $calendarBase->copy()->subMonth()->format('Y-m'))
     @php($nextMonth = $calendarBase->copy()->addMonth()->format('Y-m'))
     <div class="flex" style="justify-content:space-between; margin-bottom:8px;">
@@ -437,7 +454,7 @@
 </div>
 
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Прогноз закрытия кредитов по банкам</h2>
+    <h2 class="section-title">Прогноз закрытия кредитов по банкам</h2>
     @foreach ($forecastByBank as $bank)
         <details style="border:1px solid #e5e7eb; border-radius:8px; padding:8px; margin-bottom:8px;">
             <summary><strong>{{ $bank['bank'] }}</strong> • {{ $bank['items']->count() }} кредитов • {{ number_format($bank['totalMonthly'], 0, ',', ' ') }} ₸/мес</summary>
@@ -458,7 +475,7 @@
 </div>
 
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Последние платежи</h2>
+    <h2 class="section-title">Последние платежи</h2>
     <div style="overflow:auto;">
         <table>
             <thead><tr><th>Дата</th><th>Кредит</th><th>План</th><th>Факт</th><th>Досрочно</th><th>Комментарий</th></tr></thead>
@@ -481,7 +498,7 @@
 </div>
 
 <div class="card" style="margin-bottom:14px;">
-    <h2 style="margin-top:0;">Доход в месяц для оценки риска</h2>
+    <h2 class="section-title">Доход в месяц для оценки риска</h2>
     <form method="get" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:end;">
         <input type="hidden" name="bank" value="{{ $filterBank }}">
         <input type="hidden" name="group" value="{{ $filterGroup }}">
@@ -502,7 +519,7 @@
 </div>
 
 <div class="card" id="groups-section" style="margin-bottom:90px;">
-    <h2 style="margin-top:0;">Суммы по группам</h2>
+    <h2 class="section-title">Суммы по группам</h2>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
         @foreach ($totalsByGroup as $group)
             <div style="border:1px solid #e5e7eb; border-radius:8px; padding:10px;">
