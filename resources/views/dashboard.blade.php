@@ -178,37 +178,16 @@
         #loanFilters summary { list-style:none; cursor:pointer; font-weight:700; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; background:#f8fafc; }
         #loanFilters summary::-webkit-details-marker { display:none; }
         #loanFilters[open] summary { margin-bottom:10px; }
-        @media (min-width: 901px) {
-            #loanFilters summary { display:none; }
-            #loanFilters > *:not(summary) { display:block !important; }
-        }
     </style>
 
-    <div class="flex" style="justify-content:space-between; margin-bottom:10px;">
+    <div class="flex" style="justify-content:space-between; margin-bottom:6px;">
         <h2 style="margin:0;font-size:24px;color:#1f2937;">Ваши кредиты ({{ $visible->count() }})</h2>
-        <div class="flex">
-            <a href="{{ route('loans.export.csv') }}" class="btn btn-light">Экспорт CSV</a>
-            <a href="{{ route('loans.export.sample-csv') }}" class="btn btn-light">Шаблон CSV</a>
-            <form method="post" action="{{ route('loans.import.csv') }}" enctype="multipart/form-data" class="flex">
-                @csrf
-                <input class="field" type="file" name="csv_file" accept=".csv,.txt" style="max-width:180px;">
-                <button type="submit" class="btn btn-light">Импорт CSV</button>
-            </form>
-            <form method="post" action="{{ route('backup.import.json') }}" enctype="multipart/form-data" class="flex">
-                @csrf
-                <input class="field" type="file" name="json_file" accept=".json,.txt" style="max-width:180px;">
-                <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
-                    <input type="checkbox" name="replace_existing" value="1"> Заменить
-                </label>
-                <button type="submit" class="btn btn-light">Импорт JSON</button>
-            </form>
-            <a href="{{ route('loans.create') }}" class="btn btn-primary">+ Добавить кредит</a>
-        </div>
+        <a href="{{ route('loans.create') }}" class="btn btn-primary">+ Добавить кредит</a>
     </div>
 
     @php($hasFilter = $filterBank !== 'all' || $filterGroup !== 'all' || $filterStatus !== 'active' || $filterTerm !== 'all' || ($minAmount !== null && $minAmount !== '') || ($maxAmount !== null && $maxAmount !== ''))
-    <div style="position:sticky; top:8px; z-index:12; margin-bottom:10px;">
-        <details id="loanFilters" class="card" style="margin:0;" {{ request()->has('bank') || request()->has('group') || request()->has('status') || request()->has('term') || request()->has('min_amount') || request()->has('max_amount') || request()->has('sort') || request()->has('dir') ? 'open' : '' }}>
+    <div style="margin-bottom:10px;">
+        <details id="loanFilters" class="card" style="margin:0;" open>
             <summary>Фильтры и сортировка</summary>
             <form method="get" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px; align-items:end;">
                 <label>Банк
@@ -281,6 +260,24 @@
         @if($minAmount !== null && $minAmount !== '') <span class="filter-chip">Мин: {{ number_format((float)$minAmount, 0, ',', ' ') }} ₸</span> @endif
         @if($maxAmount !== null && $maxAmount !== '') <span class="filter-chip">Макс: {{ number_format((float)$maxAmount, 0, ',', ' ') }} ₸</span> @endif
         <span class="filter-chip">Сорт: {{ $sortOptions[$sort] ?? 'По сроку' }} ({{ $direction === 'asc' ? '↑' : '↓' }})</span>
+    </div>
+
+    <div class="flex" style="margin-bottom:10px;">
+        <a href="{{ route('loans.export.csv') }}" class="btn btn-light">Экспорт CSV</a>
+        <a href="{{ route('loans.export.sample-csv') }}" class="btn btn-light">Шаблон CSV</a>
+        <form method="post" action="{{ route('loans.import.csv') }}" enctype="multipart/form-data" class="flex">
+            @csrf
+            <input class="field" type="file" name="csv_file" accept=".csv,.txt" style="max-width:180px;">
+            <button type="submit" class="btn btn-light">Импорт CSV</button>
+        </form>
+        <form method="post" action="{{ route('backup.import.json') }}" enctype="multipart/form-data" class="flex">
+            @csrf
+            <input class="field" type="file" name="json_file" accept=".json,.txt" style="max-width:180px;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+                <input type="checkbox" name="replace_existing" value="1"> Заменить
+            </label>
+            <button type="submit" class="btn btn-light">Импорт JSON</button>
+        </form>
     </div>
 
     <form id="mass-paid-form" method="post" action="{{ route('dashboard.mark-paid') }}">@csrf</form>
