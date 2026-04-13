@@ -37,64 +37,6 @@
 </div>
 @endif
 
-<div class="card" style="margin-bottom:14px;">
-    <form method="get" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px; align-items:end;">
-        <label>Банк
-            <select class="field" name="bank">
-                <option value="all">Все банки</option>
-                @foreach ($banks as $bank)
-                    <option value="{{ $bank }}" {{ $filterBank === $bank ? 'selected' : '' }}>{{ $bank }}</option>
-                @endforeach
-            </select>
-        </label>
-        <label>Группа
-            <select class="field" name="group">
-                <option value="all">Все группы</option>
-                @foreach ($groups as $group)
-                    <option value="{{ $group }}" {{ $filterGroup === $group ? 'selected' : '' }}>{{ $group }}</option>
-                @endforeach
-            </select>
-        </label>
-        <label>Статус
-            <select class="field" name="status">
-                <option value="active" {{ $filterStatus === 'active' ? 'selected' : '' }}>Только активные</option>
-                <option value="closed" {{ $filterStatus === 'closed' ? 'selected' : '' }}>Только закрытые</option>
-                <option value="all" {{ $filterStatus === 'all' ? 'selected' : '' }}>Все</option>
-            </select>
-        </label>
-        <label>Срок
-            <select class="field" name="term">
-                <option value="all" {{ $filterTerm === 'all' ? 'selected' : '' }}>Любой</option>
-                <option value="overdue" {{ $filterTerm === 'overdue' ? 'selected' : '' }}>Срок вышел</option>
-                <option value="upTo12" {{ $filterTerm === 'upTo12' ? 'selected' : '' }}>До 12 мес.</option>
-                <option value="from12To24" {{ $filterTerm === 'from12To24' ? 'selected' : '' }}>12-24 мес.</option>
-                <option value="over24" {{ $filterTerm === 'over24' ? 'selected' : '' }}>Более 24 мес.</option>
-            </select>
-        </label>
-        <label>Мин. досрочно
-            <input class="field" type="number" step="0.01" min="0" name="min_amount" value="{{ $minAmount }}">
-        </label>
-        <label>Макс. досрочно
-            <input class="field" type="number" step="0.01" min="0" name="max_amount" value="{{ $maxAmount }}">
-        </label>
-        <label>Сортировать
-            <select class="field" name="sort">
-                @php($sortOptions = ['end' => 'По сроку', 'bank' => 'По банку', 'group' => 'По группе', 'term' => 'По мес. осталось', 'early' => 'По досрочно', 'full' => 'По полностью', 'savings' => 'По экономии', 'monthly' => 'По платежу', 'rate' => 'По ставке'])
-                @foreach ($sortOptions as $key => $label)
-                    <option value="{{ $key }}" {{ $sort === $key ? 'selected' : '' }}>{{ $label }}</option>
-                @endforeach
-            </select>
-        </label>
-        <label>Порядок
-            <select class="field" name="dir">
-                <option value="asc" {{ $direction === 'asc' ? 'selected' : '' }}>По возрастанию</option>
-                <option value="desc" {{ $direction === 'desc' ? 'selected' : '' }}>По убыванию</option>
-            </select>
-        </label>
-        <button class="btn btn-primary" type="submit">Применить</button>
-    </form>
-</div>
-
 @if($upcomingByBankDate->count())
 <div class="card" style="margin-bottom:14px;">
     <h2 style="margin-top:0;">Платежи за 30 дней</h2>
@@ -214,6 +156,17 @@
 </div>
 
 <div class="card" id="loans-section" style="margin-bottom:14px;">
+    <style>
+        .filter-chip { border:1px solid #d1d5db; border-radius:999px; padding:4px 10px; font-size:12px; background:#f8fafc; color:#334155; }
+        #loanFilters summary { list-style:none; cursor:pointer; font-weight:700; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; background:#f8fafc; }
+        #loanFilters summary::-webkit-details-marker { display:none; }
+        #loanFilters[open] summary { margin-bottom:10px; }
+        @media (min-width: 901px) {
+            #loanFilters summary { display:none; }
+            #loanFilters > *:not(summary) { display:block !important; }
+        }
+    </style>
+
     <div class="flex" style="justify-content:space-between; margin-bottom:10px;">
         <h2 style="margin:0;">Ваши кредиты ({{ $visible->count() }})</h2>
         <div class="flex">
@@ -234,6 +187,83 @@
             </form>
             <a href="{{ route('loans.create') }}" class="btn btn-primary">+ Добавить кредит</a>
         </div>
+    </div>
+
+    @php($hasFilter = $filterBank !== 'all' || $filterGroup !== 'all' || $filterStatus !== 'active' || $filterTerm !== 'all' || ($minAmount !== null && $minAmount !== '') || ($maxAmount !== null && $maxAmount !== ''))
+    <div style="position:sticky; top:8px; z-index:12; margin-bottom:10px;">
+        <details id="loanFilters" class="card" style="margin:0;" {{ request()->has('bank') || request()->has('group') || request()->has('status') || request()->has('term') || request()->has('min_amount') || request()->has('max_amount') || request()->has('sort') || request()->has('dir') ? 'open' : '' }}>
+            <summary>Фильтры и сортировка</summary>
+            <form method="get" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px; align-items:end;">
+                <label>Банк
+                    <select class="field" name="bank">
+                        <option value="all">Все банки</option>
+                        @foreach ($banks as $bank)
+                            <option value="{{ $bank }}" {{ $filterBank === $bank ? 'selected' : '' }}>{{ $bank }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>Группа
+                    <select class="field" name="group">
+                        <option value="all">Все группы</option>
+                        @foreach ($groups as $group)
+                            <option value="{{ $group }}" {{ $filterGroup === $group ? 'selected' : '' }}>{{ $group }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>Статус
+                    <select class="field" name="status">
+                        <option value="active" {{ $filterStatus === 'active' ? 'selected' : '' }}>Только активные</option>
+                        <option value="closed" {{ $filterStatus === 'closed' ? 'selected' : '' }}>Только закрытые</option>
+                        <option value="all" {{ $filterStatus === 'all' ? 'selected' : '' }}>Все</option>
+                    </select>
+                </label>
+                <label>Срок
+                    <select class="field" name="term">
+                        <option value="all" {{ $filterTerm === 'all' ? 'selected' : '' }}>Любой</option>
+                        <option value="overdue" {{ $filterTerm === 'overdue' ? 'selected' : '' }}>Срок вышел</option>
+                        <option value="upTo12" {{ $filterTerm === 'upTo12' ? 'selected' : '' }}>До 12 мес.</option>
+                        <option value="from12To24" {{ $filterTerm === 'from12To24' ? 'selected' : '' }}>12-24 мес.</option>
+                        <option value="over24" {{ $filterTerm === 'over24' ? 'selected' : '' }}>Более 24 мес.</option>
+                    </select>
+                </label>
+                <label>Мин. досрочно
+                    <input class="field" type="number" step="0.01" min="0" name="min_amount" value="{{ $minAmount }}">
+                </label>
+                <label>Макс. досрочно
+                    <input class="field" type="number" step="0.01" min="0" name="max_amount" value="{{ $maxAmount }}">
+                </label>
+                <label>Сортировать
+                    <select class="field" name="sort">
+                        @php($sortOptions = ['end' => 'По сроку', 'bank' => 'По банку', 'group' => 'По группе', 'term' => 'По мес. осталось', 'early' => 'По досрочно', 'full' => 'По полностью', 'savings' => 'По экономии', 'monthly' => 'По платежу', 'rate' => 'По ставке'])
+                        @foreach ($sortOptions as $key => $label)
+                            <option value="{{ $key }}" {{ $sort === $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>Порядок
+                    <select class="field" name="dir">
+                        <option value="asc" {{ $direction === 'asc' ? 'selected' : '' }}>По возрастанию</option>
+                        <option value="desc" {{ $direction === 'desc' ? 'selected' : '' }}>По убыванию</option>
+                    </select>
+                </label>
+                <div class="flex" style="gap:8px;">
+                    <button class="btn btn-primary" type="submit">Применить</button>
+                    @if($hasFilter)
+                        <a class="btn btn-light" href="{{ route('dashboard', array_merge(request()->query(), ['bank' => 'all', 'group' => 'all', 'status' => 'active', 'term' => 'all', 'min_amount' => null, 'max_amount' => null])) }}">Сбросить</a>
+                    @endif
+                </div>
+            </form>
+        </details>
+    </div>
+
+    <div class="flex" style="margin-bottom:10px;">
+        @if($filterBank !== 'all') <span class="filter-chip">Банк: {{ $filterBank }}</span> @endif
+        @if($filterGroup !== 'all') <span class="filter-chip">Группа: {{ $filterGroup }}</span> @endif
+        @if($filterStatus !== 'active') <span class="filter-chip">Статус: {{ $filterStatus === 'all' ? 'Все' : 'Закрытые' }}</span> @endif
+        @if($filterTerm !== 'all') <span class="filter-chip">Срок: {{ $filterTerm }}</span> @endif
+        @if($minAmount !== null && $minAmount !== '') <span class="filter-chip">Мин: {{ number_format((float)$minAmount, 0, ',', ' ') }} ₸</span> @endif
+        @if($maxAmount !== null && $maxAmount !== '') <span class="filter-chip">Макс: {{ number_format((float)$maxAmount, 0, ',', ' ') }} ₸</span> @endif
+        <span class="filter-chip">Сорт: {{ $sortOptions[$sort] ?? 'По сроку' }} ({{ $direction === 'asc' ? '↑' : '↓' }})</span>
     </div>
 
     <form id="mass-paid-form" method="post" action="{{ route('dashboard.mark-paid') }}">@csrf</form>
