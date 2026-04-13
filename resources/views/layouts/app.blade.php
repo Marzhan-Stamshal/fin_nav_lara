@@ -11,12 +11,13 @@
         body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111827; background: linear-gradient(135deg, #eff6ff, #e0e7ff); min-height: 100vh; }
         a { color: inherit; text-decoration: none; }
         .wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
-        .nav { background: #ffffff; box-shadow: 0 1px 2px rgba(0, 0, 0, .08); border-bottom: 1px solid #e5e7eb; }
-        .nav-inner { max-width: 1280px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; }
-        .nav-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .brand { font-size: 24px; font-weight: 700; color: #1f2937; margin-right: 8px; }
-        .link { color: #374151; font-weight: 600; }
-        .link:hover { color: #4f46e5; }
+        .nav { position: sticky; top: 0; z-index: 80; background: rgba(255,255,255,.88); backdrop-filter: blur(8px); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); border-bottom: 1px solid #e5e7eb; }
+        .nav-inner { max-width: 1280px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+        .nav-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .brand { font-size: 24px; font-weight: 800; color: #1f2937; margin-right: 6px; }
+        .link { color: #374151; font-weight: 700; padding: 7px 10px; border-radius: 8px; }
+        .link:hover { color: #4f46e5; background: #eef2ff; }
+        .profile-pill { display:inline-flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e5e7eb; padding:6px 10px; border-radius:999px; color:#374151; font-size:13px; font-weight:600; }
         .card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 10px 25px -10px rgba(0, 0, 0, .2); }
         .grid { display: grid; gap: 12px; }
         .grid-4 { grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); }
@@ -62,7 +63,7 @@
         <div class="nav">
             <div class="nav-inner">
                 <div class="nav-links">
-                    <a href="{{ route('dashboard') }}" class="brand">ФинНавигатор</a>
+                    <a href="{{ route('home') }}" class="brand">ФинНавигатор</a>
                     @auth
                         <a class="link" href="{{ route('dashboard') }}">Главная</a>
                         <a class="link" href="{{ route('loans.create') }}">Добавить кредит</a>
@@ -74,7 +75,7 @@
                 </div>
                 <div>
                     @auth
-                        <span style="margin-right:8px;color:#374151;">{{ auth()->user()->name }}</span>
+                        <span class="profile-pill" style="margin-right:8px;">{{ auth()->user()->name ?: auth()->user()->email }}</span>
                         <form method="post" action="{{ route('logout') }}" style="display:inline;">
                             @csrf
                             <button class="btn btn-light" type="submit">Выйти</button>

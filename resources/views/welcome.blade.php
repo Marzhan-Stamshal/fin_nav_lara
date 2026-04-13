@@ -38,8 +38,12 @@
         <div class="container nav-inner">
             <div class="brand">ФинНавигатор</div>
             <div class="links">
-                <a href="{{ route('login') }}" style="font-weight:700;color:#374151;">Вход</a>
-                <a href="{{ route('register') }}" class="btn btn-primary">Регистрация</a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="btn btn-primary">Перейти в кабинет</a>
+                @else
+                    <a href="{{ route('login') }}" style="font-weight:700;color:#374151;">Вход</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">Регистрация</a>
+                @endauth
             </div>
         </div>
     </nav>
@@ -48,8 +52,12 @@
         <h1>Управляйте своими кредитами умнее</h1>
         <p>Видьте все свои кредиты в одном месте и находите оптимальную стратегию досрочного погашения</p>
         <div class="links" style="justify-content:center;">
-            <a href="{{ route('register') }}" class="btn btn-primary">Начать бесплатно</a>
-            <a href="{{ route('login') }}" class="btn btn-light">Войти</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="btn btn-primary">Открыть дашборд</a>
+            @else
+                <a href="{{ route('register') }}" class="btn btn-primary">Начать бесплатно</a>
+                <a href="{{ route('login') }}" class="btn btn-light">Войти</a>
+            @endauth
         </div>
 
         <div class="features">
@@ -82,7 +90,11 @@
         <div class="card cta">
             <h2>Готовы взять долги под контроль?</h2>
             <p>Зарегистрируйтесь бесплатно и начните управлять кредитами уже сегодня</p>
-            <a href="{{ route('register') }}" class="btn" style="background:#fff;color:#4f46e5;">Создать аккаунт</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="btn" style="background:#fff;color:#4f46e5;">Перейти в кабинет</a>
+            @else
+                <a href="{{ route('register') }}" class="btn" style="background:#fff;color:#4f46e5;">Создать аккаунт</a>
+            @endauth
         </div>
     </section>
 
