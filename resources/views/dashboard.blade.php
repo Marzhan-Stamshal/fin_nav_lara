@@ -45,6 +45,83 @@
         <div class="db-kpi"><div class="db-kpi-label">Платеж в месяц (активные)</div><div class="db-kpi-value">{{ number_format($allActiveMonthly, 0, ',', ' ') }} ₸</div></div>
     </div>
 
+    @if($upcomingByBankDate->count())
+    <div class="db-card">
+        <h2 class="db-section">Платежи за 30 дней</h2>
+        @foreach($upcomingByBankDate as $item)
+            <div class="db-actions" style="justify-content:space-between; border:1px solid #e5e7eb; border-radius:8px; padding:8px; margin-bottom:6px;">
+                <span>{{ $item['bankName'] }} • {{ $item['dateLabel'] }}</span>
+                <strong>{{ number_format($item['total'], 0, ',', ' ') }} ₸{{ $item['count'] > 1 ? ' ('.$item['count'].')' : '' }}</strong>
+            </div>
+        @endforeach
+    </div>
+    @endif
+
+    <div class="db-card">
+        <h2 class="db-section">Календарь</h2>
+        @php($prevMonth = $calendarBase->copy()->subMonth()->format('Y-m'))
+        @php($nextMonth = $calendarBase->copy()->addMonth()->format('Y-m'))
+        <div class="db-actions" style="justify-content:space-between; margin-bottom:8px;">
+            <a class="btn btn-light" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $prevMonth, 'calendar_date' => null])) }}">←</a>
+            <strong>{{ $calendarBase->translatedFormat('F Y') }}</strong>
+            <a class="btn btn-light" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $nextMonth, 'calendar_date' => null])) }}">→</a>
+        </div>
+        <div class="db-grid-4" style="grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin-bottom:8px; font-size:12px; color:#6b7280;">
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+        </div>
+        <div class="db-grid-4" style="grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px;">
+            @php($firstDay = $calendarBase->copy()->startOfMonth())
+            @php($pad = $firstDay->dayOfWeekIso - 1)
+            @for($i=0; $i < $pad; $i++)
+                <div style="height:62px; background:#f9fafb; border-radius:8px;"></div>
+            @endfor
+            @for($d=1; $d <= $calendarBase->daysInMonth; $d++)
+                @php($dateKey = $calendarBase->copy()->day($d)->toDateString())
+                @php($entry = $calendarEntries->get($dateKey))
+                @php($selected = $selectedCalendarDate === $dateKey)
+                <a href="{{ route('dashboard', array_merge(request()->query(), ['calendar_date' => $selected ? null : $dateKey])) }}" style="height:62px; border:1px solid {{ $selected ? '#4f46e5' : ($entry ? '#86efac' : '#e5e7eb') }}; background: {{ $selected ? '#eef2ff' : ($entry ? '#f0fdf4' : '#fff') }}; border-radius:8px; text-decoration:none; color:#111827; padding:4px; font-size:11px;">
+                    <div style="font-weight:600;">{{ $d }}</div>
+                    @if($entry)<div style="font-size:10px;">{{ number_format($entry['total'], 0, ',', ' ') }} ₸</div>@endif
+                </a>
+            @endfor
+        </div>
+    </div>
+
+    @if($recommendedLoan)
+    <div class="db-card" style="border:1px solid #a7f3d0;">
+        <h2 class="db-section">Рекомендация месяца</h2>
+        <div class="db-grid-4">
+            <div>
+                <strong>{{ $recommendedLoan['loan']->title ?: $recommendedLoan['loan']->bank_name }}</strong>
+                <div class="muted">{{ $recommendedLoan['loan']->bank_name }} • {{ $recommendedLoan['loan']->loan_type }}</div>
+                <div style="margin-top:8px;">Досрочно сейчас: <strong>{{ number_format($recommendedLoan['earlyPayoffNow'], 0, ',', ' ') }} ₸</strong></div>
+                <div>Если платить до конца: <strong>{{ number_format($recommendedLoan['fullPaymentToEnd'], 0, ',', ' ') }} ₸</strong></div>
+            </div>
+            <div>
+                <div class="muted">Потенциальная экономия</div>
+                <div style="font-size:26px;font-weight:700;color:#047857;">{{ number_format($recommendedLoan['savingsIfCloseNow'], 0, ',', ' ') }} ₸</div>
+                <div>Ставка: {{ $recommendedLoan['loan']->interest_rate_annual ?? 0 }}%</div>
+                <div>Платеж/мес: {{ number_format($recommendedLoan['loan']->monthly_payment, 0, ',', ' ') }} ₸</div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($paymentReminders->count())
+    <div class="db-card">
+        <h2 class="db-section">Напоминания 3/1 день</h2>
+        @foreach($paymentReminders as $item)
+            <div class="db-actions" style="justify-content:space-between; border:1px solid #e5e7eb; border-radius:8px; padding:8px; margin-bottom:6px;">
+                <div>
+                    <strong>{{ $item['loan']->title ?: $item['loan']->bank_name }}</strong>
+                    <div class="muted">{{ $item['days'] === 1 ? 'Платеж завтра' : 'Платеж через 3 дня' }} • {{ optional($item['loan']->next_payment_date)->format('d.m.Y') }}</div>
+                </div>
+                <strong>{{ number_format($item['loan']->monthly_payment, 0, ',', ' ') }} ₸</strong>
+            </div>
+        @endforeach
+    </div>
+    @endif
+
     <div class="db-card">
         <div class="db-actions" style="justify-content:space-between; margin-bottom:8px;">
             <h2 class="db-section" style="margin:0;">Ваши кредиты ({{ $visible->count() }})</h2>
