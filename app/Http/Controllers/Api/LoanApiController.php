@@ -43,7 +43,7 @@ class LoanApiController extends Controller
 
     public function show(Request $request, Loan $loan): JsonResponse
     {
-        abort_unless($loan->user_id === $request->user()->id, 403);
+        abort_unless((string) $loan->user_id === (string) $request->user()->id, 403);
         $summary = LoanCalculator::summary($loan);
 
         return response()->json([
@@ -54,7 +54,7 @@ class LoanApiController extends Controller
 
     public function update(Request $request, Loan $loan): JsonResponse
     {
-        abort_unless($loan->user_id === $request->user()->id, 403);
+        abort_unless((string) $loan->user_id === (string) $request->user()->id, 403);
 
         $data = $this->validated($request);
         $data['months_total'] = $data['months_total'] ?: LoanCalculator::monthSpan($data['start_date'], $data['end_date']);
@@ -66,7 +66,7 @@ class LoanApiController extends Controller
 
     public function destroy(Request $request, Loan $loan): JsonResponse
     {
-        abort_unless($loan->user_id === $request->user()->id, 403);
+        abort_unless((string) $loan->user_id === (string) $request->user()->id, 403);
         $loan->delete();
 
         return response()->json(['ok' => true]);
@@ -74,7 +74,7 @@ class LoanApiController extends Controller
 
     public function payments(Request $request, Loan $loan): JsonResponse
     {
-        abort_unless($loan->user_id === $request->user()->id, 403);
+        abort_unless((string) $loan->user_id === (string) $request->user()->id, 403);
 
         $items = Payment::query()
             ->where('loan_id', $loan->id)
@@ -86,7 +86,7 @@ class LoanApiController extends Controller
 
     public function addPayment(Request $request, Loan $loan): JsonResponse
     {
-        abort_unless($loan->user_id === $request->user()->id, 403);
+        abort_unless((string) $loan->user_id === (string) $request->user()->id, 403);
 
         $data = $request->validate([
             'payment_date' => ['nullable', 'date'],

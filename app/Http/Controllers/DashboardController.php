@@ -25,18 +25,21 @@ class DashboardController extends Controller
 
         $filterBank = $request->string('bank', 'all')->toString();
         $filterGroup = $request->string('group', 'all')->toString();
-        $filterStatus = $request->string('status', 'active')->toString();
+        $filterStatus = 'active';
         $filterTerm = $request->string('term', 'all')->toString();
-        $minAmount = $request->input('min_amount');
-        $maxAmount = $request->input('max_amount');
-        $minAmountValue = is_numeric($minAmount) ? (float) $minAmount : null;
-        $maxAmountValue = is_numeric($maxAmount) ? (float) $maxAmount : null;
+        $minAmount = null;
+        $maxAmount = null;
+        $minAmountValue = null;
+        $maxAmountValue = null;
         $sort = $request->string('sort', 'end')->toString();
         $direction = $request->string('dir', 'asc')->toString() === 'desc' ? 'desc' : 'asc';
 
-        $visible = $summaries->filter(function (array $item) use ($filterBank, $filterGroup, $filterStatus, $filterTerm, $minAmountValue, $maxAmountValue) {
+        $visible = $summaries->filter(function (array $item) use ($filterBank, $filterGroup, $filterTerm) {
             $loan = $item['loan'];
             if ($filterBank !== 'all' && $loan->bank_name !== $filterBank) {
+                return false;
+            }
+            if ($loan->status === 'закрыт') {
                 return false;
             }
 
@@ -47,22 +50,11 @@ class DashboardController extends Controller
                 }
             }
 
-            if ($filterStatus === 'active' && $loan->status === 'закрыт') {
-                return false;
-            }
-
-            if ($filterStatus === 'closed' && $loan->status !== 'закрыт') {
-                return false;
-            }
-
             $monthsLeft = (int) $item['timeline']['monthsLeft'];
             if ($filterTerm === 'overdue' && $monthsLeft !== 0) return false;
             if ($filterTerm === 'upTo12' && ($monthsLeft < 1 || $monthsLeft > 12)) return false;
             if ($filterTerm === 'from12To24' && ($monthsLeft < 12 || $monthsLeft > 24)) return false;
             if ($filterTerm === 'over24' && $monthsLeft <= 24) return false;
-
-            if (!is_null($minAmountValue) && $item['earlyPayoffNow'] < $minAmountValue) return false;
-            if (!is_null($maxAmountValue) && $item['earlyPayoffNow'] > $maxAmountValue) return false;
 
             return true;
         });

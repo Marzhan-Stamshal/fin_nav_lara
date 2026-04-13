@@ -203,7 +203,7 @@ class ScenarioController extends Controller
 
     public function destroy(Scenario $scenario): RedirectResponse
     {
-        abort_unless($scenario->user_id === Auth::id(), 403);
+        abort_unless((string) $scenario->user_id === (string) Auth::id(), 403);
         $scenario->delete();
 
         return back()->with('success', 'Сценарий удален.');

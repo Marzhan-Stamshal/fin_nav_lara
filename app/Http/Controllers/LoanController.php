@@ -356,7 +356,7 @@ class LoanController extends Controller
 
     private function authorizeLoan(Loan $loan): void
     {
-        abort_unless($loan->user_id === Auth::id(), 403);
+        abort_unless((string) $loan->user_id === (string) Auth::id(), 403);
     }
 
     private function nullableString(?string $value): ?string

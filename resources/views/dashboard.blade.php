@@ -137,14 +137,9 @@
                 <label>Группа
                     <select class="field" name="group"><option value="all">Все группы</option>@foreach ($groups as $group)<option value="{{ $group }}" {{ $filterGroup === $group ? 'selected' : '' }}>{{ $group }}</option>@endforeach</select>
                 </label>
-                <label>Статус
-                    <select class="field" name="status"><option value="active" {{ $filterStatus === 'active' ? 'selected' : '' }}>Только активные</option><option value="closed" {{ $filterStatus === 'closed' ? 'selected' : '' }}>Только закрытые</option><option value="all" {{ $filterStatus === 'all' ? 'selected' : '' }}>Все</option></select>
-                </label>
                 <label>Срок
                     <select class="field" name="term"><option value="all" {{ $filterTerm === 'all' ? 'selected' : '' }}>Любой</option><option value="overdue" {{ $filterTerm === 'overdue' ? 'selected' : '' }}>Срок вышел</option><option value="upTo12" {{ $filterTerm === 'upTo12' ? 'selected' : '' }}>До 12 мес.</option><option value="from12To24" {{ $filterTerm === 'from12To24' ? 'selected' : '' }}>12-24 мес.</option><option value="over24" {{ $filterTerm === 'over24' ? 'selected' : '' }}>Более 24 мес.</option></select>
                 </label>
-                <label>Мин. досрочно<input class="field" type="number" step="0.01" min="0" name="min_amount" value="{{ $minAmount }}"></label>
-                <label>Макс. досрочно<input class="field" type="number" step="0.01" min="0" name="max_amount" value="{{ $maxAmount }}"></label>
                 <label>Сортировать<select class="field" name="sort">@foreach ($sortOptions as $key => $label)<option value="{{ $key }}" {{ $sort === $key ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></label>
                 <label>Порядок<select class="field" name="dir"><option value="asc" {{ $direction === 'asc' ? 'selected' : '' }}>По возрастанию</option><option value="desc" {{ $direction === 'desc' ? 'selected' : '' }}>По убыванию</option></select></label>
                 <div class="db-actions"><button class="btn btn-primary" type="submit">Применить</button><a class="btn btn-light" href="{{ route('dashboard') }}">Сбросить</a></div>
@@ -154,17 +149,8 @@
         <div class="db-actions" style="margin-bottom:10px;">
             @if($filterBank !== 'all') <span class="db-chip">Банк: {{ $filterBank }}</span> @endif
             @if($filterGroup !== 'all') <span class="db-chip">Группа: {{ $filterGroup }}</span> @endif
-            @if($filterStatus !== 'active') <span class="db-chip">Статус: {{ $filterStatus === 'all' ? 'Все' : 'Закрытые' }}</span> @endif
             @if($filterTerm !== 'all') <span class="db-chip">Срок: {{ $filterTerm }}</span> @endif
-            @if($minAmount !== null && $minAmount !== '') <span class="db-chip">Мин: {{ number_format((float)$minAmount, 0, ',', ' ') }} ₸</span> @endif
-            @if($maxAmount !== null && $maxAmount !== '') <span class="db-chip">Макс: {{ number_format((float)$maxAmount, 0, ',', ' ') }} ₸</span> @endif
             <span class="db-chip">Сорт: {{ $sortOptions[$sort] ?? 'По сроку' }} ({{ $direction === 'asc' ? '↑' : '↓' }})</span>
-        </div>
-        <div class="db-actions" style="margin-bottom:10px;">
-            <a href="{{ route('loans.export.csv') }}" class="btn btn-light">Экспорт CSV</a>
-            <a href="{{ route('loans.export.sample-csv') }}" class="btn btn-light">Шаблон CSV</a>
-            <form method="post" action="{{ route('loans.import.csv') }}" enctype="multipart/form-data" class="db-actions">@csrf<input class="field" type="file" name="csv_file" accept=".csv,.txt" style="max-width:180px;"><button type="submit" class="btn btn-light">Импорт CSV</button></form>
-            <form method="post" action="{{ route('backup.import.json') }}" enctype="multipart/form-data" class="db-actions">@csrf<input class="field" type="file" name="json_file" accept=".json,.txt" style="max-width:180px;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;"><input type="checkbox" name="replace_existing" value="1"> Заменить</label><button type="submit" class="btn btn-light">Импорт JSON</button></form>
         </div>
 
         <form id="mass-paid-form" method="post" action="{{ route('dashboard.mark-paid') }}">@csrf</form>
@@ -210,6 +196,16 @@
                 <tfoot><tr style="background:#f9fafb; font-weight:700;"><td>—</td><td>ИТОГО</td><td>{{ $visible->count() }} кредитов</td><td>—</td><td>{{ number_format($totalEarly, 0, ',', ' ') }} ₸</td><td>{{ number_format($totalFull, 0, ',', ' ') }} ₸</td><td style="color:#047857;">{{ number_format($totalSavings, 0, ',', ' ') }} ₸</td><td>{{ number_format($totalMonthly, 0, ',', ' ') }} ₸</td><td>—</td><td>—</td><td>—</td></tr></tfoot>
             </table>
         </div>
+
+        <details style="margin-top:10px;">
+            <summary style="cursor:pointer; font-weight:700; color:#374151;">Импорт и экспорт данных</summary>
+            <div class="db-actions" style="margin-top:8px;">
+                <a href="{{ route('loans.export.csv') }}" class="btn btn-light">Экспорт CSV</a>
+                <a href="{{ route('loans.export.sample-csv') }}" class="btn btn-light">Шаблон CSV</a>
+                <form method="post" action="{{ route('loans.import.csv') }}" enctype="multipart/form-data" class="db-actions">@csrf<input class="field" type="file" name="csv_file" accept=".csv,.txt" style="max-width:180px;"><button type="submit" class="btn btn-light">Импорт CSV</button></form>
+                <form method="post" action="{{ route('backup.import.json') }}" enctype="multipart/form-data" class="db-actions">@csrf<input class="field" type="file" name="json_file" accept=".json,.txt" style="max-width:180px;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;"><input type="checkbox" name="replace_existing" value="1"> Заменить</label><button type="submit" class="btn btn-light">Импорт JSON</button></form>
+            </div>
+        </details>
     </div>
 
     <div class="db-grid-2">
@@ -219,7 +215,7 @@
                 <div class="db-card" style="border:1px solid #e5e7eb; box-shadow:none; padding:12px; margin-bottom:10px;">
                     <h3 style="margin:0 0 8px; color:#1f2937;">Сценарий: если внесу +X в этом месяце</h3>
                     <form method="get" class="db-grid-4" style="grid-template-columns:1fr 1fr; gap:8px;">
-                        <input type="hidden" name="bank" value="{{ $filterBank }}"><input type="hidden" name="group" value="{{ $filterGroup }}"><input type="hidden" name="status" value="{{ $filterStatus }}"><input type="hidden" name="term" value="{{ $filterTerm }}"><input type="hidden" name="min_amount" value="{{ $minAmount }}"><input type="hidden" name="max_amount" value="{{ $maxAmount }}"><input type="hidden" name="sort" value="{{ $sort }}"><input type="hidden" name="dir" value="{{ $direction }}">
+                        <input type="hidden" name="bank" value="{{ $filterBank }}"><input type="hidden" name="group" value="{{ $filterGroup }}"><input type="hidden" name="term" value="{{ $filterTerm }}"><input type="hidden" name="sort" value="{{ $sort }}"><input type="hidden" name="dir" value="{{ $direction }}">
                         <select class="field" name="what_if_loan_id">@foreach($visible as $item)<option value="{{ $item['loan']->id }}" {{ (int)$whatIfLoanId === (int)$item['loan']->id ? 'selected' : '' }}>{{ $item['loan']->title ?: $item['loan']->bank_name }} — {{ $item['loan']->loan_type }}</option>@endforeach</select>
                         <input class="field" type="number" min="0" step="0.01" name="what_if_extra" value="{{ $whatIfExtra > 0 ? $whatIfExtra : '' }}" placeholder="Доп. платеж (тг)">
                         <div><button class="btn btn-primary" type="submit">Рассчитать</button></div>
@@ -271,7 +267,7 @@
                     </div>
                 @endforeach
             </div>
-            <div class="db-card"><h2 class="db-section">Доход в месяц для оценки риска</h2><form method="get" class="db-grid-4" style="grid-template-columns:1fr auto; align-items:end;"><input type="hidden" name="bank" value="{{ $filterBank }}"><input type="hidden" name="group" value="{{ $filterGroup }}"><input type="hidden" name="status" value="{{ $filterStatus }}"><input type="hidden" name="term" value="{{ $filterTerm }}"><input type="hidden" name="min_amount" value="{{ $minAmount }}"><input type="hidden" name="max_amount" value="{{ $maxAmount }}"><input type="hidden" name="sort" value="{{ $sort }}"><input type="hidden" name="dir" value="{{ $direction }}"><label>Доход в месяц<input class="field" type="number" min="0" step="0.01" name="monthly_income" value="{{ $monthlyIncome > 0 ? $monthlyIncome : '' }}" placeholder="Например 450000"></label><button class="btn btn-primary" type="submit">Оценить</button></form><div style="margin-top:10px; display:inline-block; border:1px solid {{ $riskColor }}; color:{{ $riskColor }}; border-radius:8px; padding:8px 12px; font-weight:700;">{{ $riskLabel }}@if(!is_null($burdenPercent)) ({{ number_format($burdenPercent, 1, ',', ' ') }}%)@endif</div><p class="muted" style="margin-top:8px;">Текущая нагрузка: {{ number_format($allActiveMonthly, 0, ',', ' ') }} ₸/мес</p></div>
+            <div class="db-card"><h2 class="db-section">Доход в месяц для оценки риска</h2><form method="get" class="db-grid-4" style="grid-template-columns:1fr auto; align-items:end;"><input type="hidden" name="bank" value="{{ $filterBank }}"><input type="hidden" name="group" value="{{ $filterGroup }}"><input type="hidden" name="term" value="{{ $filterTerm }}"><input type="hidden" name="sort" value="{{ $sort }}"><input type="hidden" name="dir" value="{{ $direction }}"><label>Доход в месяц<input class="field" type="number" min="0" step="0.01" name="monthly_income" value="{{ $monthlyIncome > 0 ? $monthlyIncome : '' }}" placeholder="Например 450000"></label><button class="btn btn-primary" type="submit">Оценить</button></form><div style="margin-top:10px; display:inline-block; border:1px solid {{ $riskColor }}; color:{{ $riskColor }}; border-radius:8px; padding:8px 12px; font-weight:700;">{{ $riskLabel }}@if(!is_null($burdenPercent)) ({{ number_format($burdenPercent, 1, ',', ' ') }}%)@endif</div><p class="muted" style="margin-top:8px;">Текущая нагрузка: {{ number_format($allActiveMonthly, 0, ',', ' ') }} ₸/мес</p></div>
         </div>
     </div>
 </div>
