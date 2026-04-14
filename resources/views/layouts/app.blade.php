@@ -18,7 +18,8 @@
         .nav-top { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
         .nav-menu { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .nav-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .brand { font-size: 28px; font-weight: 800; color: #1e293b; letter-spacing: -0.02em; }
+        .brand { display: inline-flex; align-items: center; }
+        .brand-logo { height: 36px; width: auto; display: block; }
         .link { color: #374151; font-weight: 700; padding: 7px 10px; border-radius: 8px; }
         .link:hover { color: #1d4ed8; background: #eff6ff; }
         .profile-pill { display:inline-flex; align-items:center; gap:8px; background:#f8fbff; border:1px solid #dbe4ff; padding:6px 10px; border-radius:999px; color:#334155; font-size:13px; font-weight:700; }
@@ -77,7 +78,9 @@
         <div class="nav">
             <div class="nav-inner">
                 <div class="nav-top">
-                    <a href="{{ route('home') }}" class="brand">ФинНавигатор</a>
+                    <a href="{{ route('home') }}" class="brand" aria-label="ФинНавигатор">
+                        <img src="{{ asset('icon.png') }}" alt="ФинНавигатор" class="brand-logo">
+                    </a>
                     <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu">☰</button>
                 </div>
 
