@@ -24,7 +24,31 @@
     .db-grid-4 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); }
     .db-grid-2 { display: grid; gap: 12px; grid-template-columns: 1.6fr 1fr; }
     .db-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .db-tools-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        color: #1e293b;
+        cursor: pointer;
+        user-select: none;
+    }
+    .db-tools-toggle::marker,
+    .db-tools-toggle::-webkit-details-marker {
+        display: none;
+    }
+    .db-tools-panel {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+    }
     .db-mass-actions .field { width: 220px; max-width: 100%; }
+    .db-action-btn {
+        padding: 11px 14px;
+        font-size: 14px;
+        font-weight: 800;
+        border-radius: 11px;
+    }
     .db-mobile-card { border: 1px solid #dbe4ff; border-radius: 12px; padding: 10px; margin-bottom: 8px; background: #ffffff; box-shadow: 0 8px 16px -14px rgba(30, 64, 175, .5); }
     .db-mobile-title { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; }
     .db-mobile-name { font-weight: 800; color: #1f2937; line-height: 1.2; }
@@ -152,22 +176,24 @@
             <a href="{{ route('loans.create') }}" class="btn btn-primary">+ Добавить кредит</a>
         </div>
 
-        <details open style="margin-bottom:10px;">
-            <summary style="cursor:pointer; font-weight:700; margin-bottom:10px;">Фильтры и сортировка</summary>
-            <form method="get" class="db-filters">
-                <label>Банк
-                    <select class="field" name="bank"><option value="all">Все банки</option>@foreach ($banks as $bank)<option value="{{ $bank }}" {{ $filterBank === $bank ? 'selected' : '' }}>{{ $bank }}</option>@endforeach</select>
-                </label>
-                <label>Группа
-                    <select class="field" name="group"><option value="all">Все группы</option>@foreach ($groups as $group)<option value="{{ $group }}" {{ $filterGroup === $group ? 'selected' : '' }}>{{ $group }}</option>@endforeach</select>
-                </label>
-                <label>Срок
-                    <select class="field" name="term"><option value="all" {{ $filterTerm === 'all' ? 'selected' : '' }}>Любой</option><option value="overdue" {{ $filterTerm === 'overdue' ? 'selected' : '' }}>Срок вышел</option><option value="upTo12" {{ $filterTerm === 'upTo12' ? 'selected' : '' }}>До 12 мес.</option><option value="from12To24" {{ $filterTerm === 'from12To24' ? 'selected' : '' }}>12-24 мес.</option><option value="over24" {{ $filterTerm === 'over24' ? 'selected' : '' }}>Более 24 мес.</option></select>
-                </label>
-                <label>Сортировать<select class="field" name="sort">@foreach ($sortOptions as $key => $label)<option value="{{ $key }}" {{ $sort === $key ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></label>
-                <label>Порядок<select class="field" name="dir"><option value="asc" {{ $direction === 'asc' ? 'selected' : '' }}>По возрастанию</option><option value="desc" {{ $direction === 'desc' ? 'selected' : '' }}>По убыванию</option></select></label>
-                <div class="db-actions"><button class="btn btn-primary" type="submit">Применить</button><a class="btn btn-light" href="{{ route('dashboard') }}">Сбросить</a></div>
-            </form>
+        <details style="margin-bottom:10px;">
+            <summary class="db-tools-toggle">Фильтры и сортировка</summary>
+            <div class="db-tools-panel">
+                <form method="get" class="db-filters">
+                    <label>Банк
+                        <select class="field" name="bank"><option value="all">Все банки</option>@foreach ($banks as $bank)<option value="{{ $bank }}" {{ $filterBank === $bank ? 'selected' : '' }}>{{ $bank }}</option>@endforeach</select>
+                    </label>
+                    <label>Группа
+                        <select class="field" name="group"><option value="all">Все группы</option>@foreach ($groups as $group)<option value="{{ $group }}" {{ $filterGroup === $group ? 'selected' : '' }}>{{ $group }}</option>@endforeach</select>
+                    </label>
+                    <label>Срок
+                        <select class="field" name="term"><option value="all" {{ $filterTerm === 'all' ? 'selected' : '' }}>Любой</option><option value="overdue" {{ $filterTerm === 'overdue' ? 'selected' : '' }}>Срок вышел</option><option value="upTo12" {{ $filterTerm === 'upTo12' ? 'selected' : '' }}>До 12 мес.</option><option value="from12To24" {{ $filterTerm === 'from12To24' ? 'selected' : '' }}>12-24 мес.</option><option value="over24" {{ $filterTerm === 'over24' ? 'selected' : '' }}>Более 24 мес.</option></select>
+                    </label>
+                    <label>Сортировать<select class="field" name="sort">@foreach ($sortOptions as $key => $label)<option value="{{ $key }}" {{ $sort === $key ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></label>
+                    <label>Порядок<select class="field" name="dir"><option value="asc" {{ $direction === 'asc' ? 'selected' : '' }}>По возрастанию</option><option value="desc" {{ $direction === 'desc' ? 'selected' : '' }}>По убыванию</option></select></label>
+                    <div class="db-actions"><button class="btn btn-primary db-action-btn" type="submit">Применить</button><a class="btn btn-light db-action-btn" href="{{ route('dashboard') }}">Сбросить</a></div>
+                </form>
+            </div>
         </details>
 
         <div class="db-actions" style="margin-bottom:10px;">
@@ -182,16 +208,21 @@
         <form id="mass-group-form" method="post" action="{{ route('dashboard.assign-group') }}">@csrf<input type="hidden" name="group_name" id="mass-group-name"></form>
         <form id="mass-clear-group-form" method="post" action="{{ route('dashboard.clear-group') }}">@csrf</form>
 
-        <div class="db-actions db-mass-actions" style="margin-bottom:10px;">
-            <button type="button" class="btn btn-green" onclick="submitMass('paid')">Оплачено за месяц</button>
-            <button type="button" class="btn btn-orange" onclick="submitMass('close')">Закрыла досрочно</button>
-            <input class="field" type="text" id="groupNameInput" placeholder="Название группы">
-            <button type="button" class="btn btn-gray" onclick="submitMass('group')">В группу</button>
-            <button type="button" class="btn btn-light" onclick="submitMass('group-clear')">Убрать группу</button>
-            <button type="button" class="btn btn-light" onclick="toggleAll(true)">Выбрать все</button>
-            <button type="button" class="btn btn-light" onclick="toggleAll(false)">Снять выбор</button>
-            <span class="muted db-right">Платеж/мес (выборочно): <strong id="selectedMonthly">0 ₸</strong></span>
-        </div>
+        <details style="margin-bottom:10px;">
+            <summary class="db-tools-toggle">Групповые действия</summary>
+            <div class="db-tools-panel">
+                <div class="db-actions db-mass-actions" style="margin-bottom:10px;">
+                    <button type="button" class="btn btn-green db-action-btn" onclick="submitMass('paid')">Оплачено за месяц</button>
+                    <button type="button" class="btn btn-orange db-action-btn" onclick="submitMass('close')">Закрыла досрочно</button>
+                    <input class="field" type="text" id="groupNameInput" placeholder="Название группы">
+                    <button type="button" class="btn btn-gray db-action-btn" onclick="submitMass('group')">Добавить в группу</button>
+                    <button type="button" class="btn btn-light db-action-btn" onclick="submitMass('group-clear')">Убрать из группы</button>
+                    <button type="button" class="btn btn-light db-action-btn" onclick="toggleAll(true)">Выбрать все</button>
+                    <button type="button" class="btn btn-light db-action-btn" onclick="toggleAll(false)">Снять выбор</button>
+                    <span class="muted db-right">Платеж/мес (выборочно): <strong id="selectedMonthly">0 ₸</strong></span>
+                </div>
+            </div>
+        </details>
 
         <div class="db-table-wrap">
             <table class="db-table">
