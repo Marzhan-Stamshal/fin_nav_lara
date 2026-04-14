@@ -1,12 +1,18 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/icont.png" sizes="any">
     <title>ФинНавигатор</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Manrope, "Segoe UI", Arial, sans-serif;
@@ -16,20 +22,56 @@
                 radial-gradient(circle at 88% 20%, #c4b5fd 0%, transparent 32%),
                 linear-gradient(155deg, #eef4ff 0%, #e0ecff 55%, #d9e5ff 100%);
         }
-        .container { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 18px;
+        }
+
         .topbar {
             position: sticky;
             top: 0;
             z-index: 30;
             border-bottom: 1px solid #dbeafe;
-            background: rgba(255,255,255,.82);
+            background: rgba(255, 255, 255, .82);
             backdrop-filter: blur(10px);
         }
-        .topbar-inner { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .brand { display: inline-flex; align-items: center; gap: 10px; }
-        .brand img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; box-shadow: 0 8px 18px -12px rgba(29, 78, 216, .8); }
-        .brand strong { font-size: 24px; letter-spacing: -0.02em; }
-        .links { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .topbar-inner {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand img {
+
+            height: 72px;
+            border-radius: 10px;
+            object-fit: cover;
+
+        }
+
+        .brand strong {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .btn {
             display: inline-block;
             border: 0;
@@ -39,16 +81,34 @@
             font-weight: 800;
             cursor: pointer;
         }
-        .btn-primary { background: #1d4ed8; color: #fff; box-shadow: 0 10px 18px -14px rgba(29, 78, 216, .9); }
-        .btn-light { background: #fff; color: #1e293b; border: 1px solid #cbd5e1; }
-        .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; padding: 34px 0 14px; }
+
+        .btn-primary {
+            background: #1d4ed8;
+            color: #fff;
+            box-shadow: 0 10px 18px -14px rgba(29, 78, 216, .9);
+        }
+
+        .btn-light {
+            background: #fff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 18px;
+            padding: 34px 0 14px;
+        }
+
         .panel {
-            background: rgba(255,255,255,.82);
+            background: rgba(255, 255, 255, .82);
             border: 1px solid #dbeafe;
             border-radius: 18px;
             padding: 22px;
             box-shadow: 0 20px 30px -25px rgba(30, 64, 175, .4);
         }
+
         .label {
             display: inline-flex;
             align-items: center;
@@ -60,14 +120,28 @@
             border-radius: 999px;
             padding: 6px 10px;
         }
+
         h1 {
             margin: 14px 0 10px;
             font-size: clamp(30px, 5vw, 56px);
             line-height: 1.02;
             letter-spacing: -0.03em;
         }
-        .sub { margin: 0; color: #475569; font-size: 17px; line-height: 1.5; max-width: 56ch; }
-        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+        .sub {
+            margin: 0;
+            color: #475569;
+            font-size: 17px;
+            line-height: 1.5;
+            max-width: 56ch;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
 
         .visual {
             position: relative;
@@ -76,6 +150,7 @@
             background: linear-gradient(160deg, #1e3a8a, #3730a3 50%, #4f46e5);
             color: #fff;
         }
+
         .visual .glow {
             position: absolute;
             width: 240px;
@@ -84,25 +159,76 @@
             filter: blur(30px);
             opacity: .34;
         }
-        .visual .g1 { background: #7dd3fc; top: -66px; right: -42px; }
-        .visual .g2 { background: #c4b5fd; bottom: -80px; left: -36px; }
-        .visual-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; position: relative; z-index: 2; }
+
+        .visual .g1 {
+            background: #7dd3fc;
+            top: -66px;
+            right: -42px;
+        }
+
+        .visual .g2 {
+            background: #c4b5fd;
+            bottom: -80px;
+            left: -36px;
+        }
+
+        .visual-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
         .visual-card {
             position: relative;
             z-index: 2;
             border-radius: 14px;
-            border: 1px solid rgba(255,255,255,.2);
-            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255, 255, 255, .2);
+            background: rgba(255, 255, 255, .12);
             padding: 12px;
             margin-bottom: 8px;
         }
-        .amount { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
-        .mini { font-size: 12px; color: rgba(255,255,255,.85); }
-        .chart { margin-top: 8px; display: grid; gap: 7px; }
-        .bar { height: 10px; border-radius: 999px; background: rgba(255,255,255,.18); overflow: hidden; }
-        .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #93c5fd, #34d399); }
 
-        .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+        .amount {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .mini {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .85);
+        }
+
+        .chart {
+            margin-top: 8px;
+            display: grid;
+            gap: 7px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .18);
+            overflow: hidden;
+        }
+
+        .bar>span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #93c5fd, #34d399);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin: 14px 0;
+        }
+
         .feature {
             background: #fff;
             border-radius: 14px;
@@ -110,8 +236,20 @@
             padding: 16px;
             box-shadow: 0 16px 24px -24px rgba(30, 64, 175, .45);
         }
-        .feature h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -0.02em; }
-        .feature p { margin: 0; color: #475569; font-size: 14px; line-height: 1.45; }
+
+        .feature h3 {
+            margin: 0 0 8px;
+            font-size: 19px;
+            letter-spacing: -0.02em;
+        }
+
+        .feature p {
+            margin: 0;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
         .feature .icon {
             width: 34px;
             height: 34px;
@@ -137,26 +275,59 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .bottom-cta strong { display: block; font-size: 24px; letter-spacing: -0.02em; margin-bottom: 4px; }
-        .bottom-cta span { color: #cbd5e1; font-size: 14px; }
-        .footer { text-align: center; color: #64748b; font-size: 13px; padding: 0 0 26px; }
+
+        .bottom-cta strong {
+            display: block;
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .bottom-cta span {
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            padding: 0 0 26px;
+        }
 
         @media (max-width: 980px) {
-            .hero { grid-template-columns: 1fr; }
-            .features { grid-template-columns: 1fr; }
-            .topbar-inner { min-height: 64px; }
-            .brand strong { font-size: 22px; }
-            .btn { padding: 10px 12px; }
-            .visual { min-height: auto; }
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-inner {
+                min-height: 64px;
+            }
+
+            .brand strong {
+                font-size: 22px;
+            }
+
+            .btn {
+                padding: 10px 12px;
+            }
+
+            .visual {
+                min-height: auto;
+            }
         }
     </style>
 </head>
+
 <body>
     <nav class="topbar">
         <div class="container topbar-inner">
             <a href="{{ route('home') }}" class="brand">
                 <img src="{{ asset('icon.png') }}" alt="ФинНавигатор">
-                <strong>ФинНавигатор</strong>
             </a>
             <div class="links">
                 @auth
@@ -174,7 +345,8 @@
             <article class="panel">
                 <span class="label">Ваши кредиты под контролем</span>
                 <h1>Красиво, понятно и без путаницы</h1>
-                <p class="sub">Смотрите досрочную сумму, сколько останется платить до конца, какую экономию получите и где можно закрыть быстрее.</p>
+                <p class="sub">Смотрите досрочную сумму, сколько останется платить до конца, какую экономию получите
+                    и где можно закрыть быстрее.</p>
                 <div class="hero-actions">
                     @auth
                         <a href="{{ route('dashboard') }}" class="btn btn-primary">Открыть дашборд</a>
@@ -246,4 +418,5 @@
         &copy; 2026 ФинНавигатор. Расчеты ориентировочные, проверяйте условия в банке.
     </footer>
 </body>
+
 </html>
