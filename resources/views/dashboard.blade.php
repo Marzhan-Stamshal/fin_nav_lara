@@ -6,12 +6,12 @@
     .db-wrap { display: grid; gap: 14px; }
     .db-title { margin: 0; font-size: 30px; color: #1f2937; }
     .db-sub { margin: 6px 0 0; color: #6b7280; font-size: 14px; }
-    .db-kpi { border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; background: #fff; box-shadow: 0 6px 18px -14px rgba(0,0,0,.35); }
+    .db-kpi { border: 1px solid #dbeafe; border-radius: 12px; padding: 14px; background: linear-gradient(140deg, #ffffff, #f8fbff); box-shadow: 0 10px 24px -18px rgba(30, 64, 175, .55); }
     .db-kpi-label { color: #6b7280; font-size: 12px; margin-bottom: 6px; }
-    .db-kpi-value { color: #1f2937; font-size: 30px; font-weight: 700; }
+    .db-kpi-value { color: #1f2937; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
     .db-kpi-value.green { color: #047857; }
-    .db-card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 6px 18px -14px rgba(0,0,0,.35); }
-    .db-section { margin: 0 0 10px; font-size: 24px; color: #1f2937; }
+    .db-card { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 10px 24px -18px rgba(15, 23, 42, .45); }
+    .db-section { margin: 0 0 10px; font-size: 24px; color: #1f2937; letter-spacing: -0.02em; }
     .db-filters { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; }
     .db-chip { border: 1px solid #d1d5db; border-radius: 999px; padding: 4px 10px; font-size: 12px; background: #f8fafc; color: #334155; }
     .db-table-wrap { overflow: auto; border: 1px solid #e5e7eb; border-radius: 10px; }
@@ -24,12 +24,36 @@
     .db-grid-4 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); }
     .db-grid-2 { display: grid; gap: 12px; grid-template-columns: 1.6fr 1fr; }
     .db-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .db-mass-actions .field { width: 220px; max-width: 100%; }
+    .db-mobile-card { border: 1px solid #dbe4ff; border-radius: 12px; padding: 10px; margin-bottom: 8px; background: #ffffff; box-shadow: 0 8px 16px -14px rgba(30, 64, 175, .5); }
+    .db-mobile-title { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; }
+    .db-mobile-name { font-weight: 800; color: #1f2937; line-height: 1.2; }
+    .db-mobile-bank { font-size: 12px; color: #64748b; }
+    .db-mobile-grid { display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:8px; }
+    .db-mobile-pill { border-radius: 8px; padding: 6px 8px; background: #f8fafc; font-size: 12px; }
+    .db-mobile-links { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+    .db-mobile-links a, .db-mobile-links button { font-size: 13px; font-weight: 700; border: 0; background: transparent; padding: 0; cursor: pointer; }
+    .db-mobile-links .danger { color: #dc2626; }
     .db-right { margin-left: auto; }
     .db-mobile-cards { display: none; }
     .db-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; border-top: 1px solid #e5e7eb; background: rgba(255,255,255,.95); backdrop-filter: blur(4px); padding: 10px 14px; display: none; }
     .db-sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
     @media (max-width: 1200px) { .db-grid-2 { grid-template-columns: 1fr; } }
-    @media (max-width: 900px) { .db-table-wrap { display: none; } .db-mobile-cards { display: block; } }
+    @media (max-width: 900px) {
+        .db-wrap { gap: 10px; }
+        .db-title { font-size: 26px; }
+        .db-section { font-size: 22px; }
+        .db-card { padding: 12px; }
+        .db-kpi { padding: 12px; }
+        .db-kpi-value { font-size: 24px; }
+        .db-grid-4 { grid-template-columns: 1fr; }
+        .db-filters { grid-template-columns: 1fr; }
+        .db-actions { gap: 6px; }
+        .db-mass-actions .btn, .db-mass-actions .field { width: 100%; }
+        .db-right { margin-left: 0; width: 100%; }
+        .db-table-wrap { display: none; }
+        .db-mobile-cards { display: block; }
+    }
 </style>
 
 <div class="db-wrap">
@@ -158,10 +182,10 @@
         <form id="mass-group-form" method="post" action="{{ route('dashboard.assign-group') }}">@csrf<input type="hidden" name="group_name" id="mass-group-name"></form>
         <form id="mass-clear-group-form" method="post" action="{{ route('dashboard.clear-group') }}">@csrf</form>
 
-        <div class="db-actions" style="margin-bottom:10px;">
+        <div class="db-actions db-mass-actions" style="margin-bottom:10px;">
             <button type="button" class="btn btn-green" onclick="submitMass('paid')">Оплачено за месяц</button>
             <button type="button" class="btn btn-orange" onclick="submitMass('close')">Закрыла досрочно</button>
-            <input class="field" type="text" id="groupNameInput" placeholder="Название группы" style="max-width:220px;">
+            <input class="field" type="text" id="groupNameInput" placeholder="Название группы">
             <button type="button" class="btn btn-gray" onclick="submitMass('group')">В группу</button>
             <button type="button" class="btn btn-light" onclick="submitMass('group-clear')">Убрать группу</button>
             <button type="button" class="btn btn-light" onclick="toggleAll(true)">Выбрать все</button>
@@ -195,6 +219,57 @@
                 </tbody>
                 <tfoot><tr style="background:#f9fafb; font-weight:700;"><td>—</td><td>ИТОГО</td><td>{{ $visible->count() }} кредитов</td><td>—</td><td>{{ number_format($totalEarly, 0, ',', ' ') }} ₸</td><td>{{ number_format($totalFull, 0, ',', ' ') }} ₸</td><td style="color:#047857;">{{ number_format($totalSavings, 0, ',', ' ') }} ₸</td><td>{{ number_format($totalMonthly, 0, ',', ' ') }} ₸</td><td>—</td><td>—</td><td>—</td></tr></tfoot>
             </table>
+        </div>
+
+        <div class="db-mobile-cards">
+            @forelse ($visible as $item)
+                @php($loan = $item['loan'])
+                @php($timeline = $item['timeline'])
+                <div class="db-mobile-card">
+                    <div class="db-mobile-title">
+                        <div>
+                            <div class="db-mobile-name">{{ $loan->title ?: $loan->bank_name }}</div>
+                            <div class="db-mobile-bank">{{ $loan->bank_name }} • {{ $loan->loan_type }}</div>
+                        </div>
+                        <input type="checkbox" class="loan-check" data-loan-id="{{ $loan->id }}" value="{{ $loan->id }}" data-monthly="{{ $loan->monthly_payment }}">
+                    </div>
+
+                    <div style="margin-bottom:6px; font-size:12px; color:#334155;">Прогресс: {{ $timeline['monthsPaid'] }} из {{ $timeline['monthsTotal'] }} мес. ({{ $timeline['progressPercent'] }}%)</div>
+                    <div class="db-progress"><div style="width:{{ $timeline['progressPercent'] }}%"></div></div>
+
+                    <div class="db-mobile-grid">
+                        <div class="db-mobile-pill">Досрочно: <strong>{{ number_format($item['earlyPayoffNow'], 0, ',', ' ') }} ₸</strong></div>
+                        <div class="db-mobile-pill">Полностью: <strong>{{ number_format($item['fullPaymentToEnd'], 0, ',', ' ') }} ₸</strong></div>
+                        <div class="db-mobile-pill" style="background:#ecfdf5;color:#065f46;">Экономия: <strong>{{ number_format($item['savingsIfCloseNow'], 0, ',', ' ') }} ₸</strong></div>
+                        <div class="db-mobile-pill">Платеж/мес: <strong>{{ number_format($loan->monthly_payment, 0, ',', ' ') }} ₸</strong></div>
+                    </div>
+
+                    <div class="muted" style="margin-top:6px;">Ставка: {{ $loan->interest_rate_annual ?? 0 }}% • До: {{ optional($loan->end_date)->format('d.m.Y') }} • {{ $loan->group_name ?: 'Без группы' }}</div>
+
+                    <div class="db-mobile-links">
+                        <a href="{{ route('loans.show', $loan) }}" style="color:#2563eb;">Подробно</a>
+                        <a href="{{ route('loans.edit', $loan) }}" style="color:#2563eb;">Изменить</a>
+                        <form method="post" action="{{ route('loans.destroy', $loan) }}" onsubmit="return confirm('Удалить кредит?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="muted">Кредитов пока нет.</div>
+            @endforelse
+
+            <div class="db-mobile-card" style="background:#f8fafc;">
+                <div style="font-weight:800; margin-bottom:6px;">ИТОГО</div>
+                <div class="db-mobile-grid">
+                    <div class="db-mobile-pill">Кредитов: <strong>{{ $visible->count() }}</strong></div>
+                    <div class="db-mobile-pill">Платеж/мес: <strong>{{ number_format($totalMonthly, 0, ',', ' ') }} ₸</strong></div>
+                    <div class="db-mobile-pill">Досрочно: <strong>{{ number_format($totalEarly, 0, ',', ' ') }} ₸</strong></div>
+                    <div class="db-mobile-pill">Полностью: <strong>{{ number_format($totalFull, 0, ',', ' ') }} ₸</strong></div>
+                    <div class="db-mobile-pill" style="background:#ecfdf5;color:#065f46;">Экономия: <strong>{{ number_format($totalSavings, 0, ',', ' ') }} ₸</strong></div>
+                </div>
+            </div>
         </div>
 
         <details style="margin-top:10px;">
