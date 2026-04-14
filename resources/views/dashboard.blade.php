@@ -11,6 +11,7 @@
     .db-kpi-value { color: #1f2937; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
     .db-kpi-value.green { color: #047857; }
     .db-card { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 10px 24px -18px rgba(15, 23, 42, .45); }
+    .db-card-loading { opacity: .55; pointer-events: none; transition: opacity .2s ease; }
     .db-section { margin: 0 0 10px; font-size: 24px; color: #1f2937; letter-spacing: -0.02em; }
     .db-filters { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; }
     .db-chip { border: 1px solid #d1d5db; border-radius: 999px; padding: 4px 10px; font-size: 12px; background: #f8fafc; color: #334155; }
@@ -105,14 +106,14 @@
     </div>
     @endif
 
-    <div class="db-card">
+    <div class="db-card" id="calendarCard">
         <h2 class="db-section">Календарь</h2>
         @php($prevMonth = $calendarBase->copy()->subMonth()->format('Y-m'))
         @php($nextMonth = $calendarBase->copy()->addMonth()->format('Y-m'))
         <div class="db-actions" style="justify-content:space-between; margin-bottom:8px;">
-            <a class="btn btn-light" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $prevMonth, 'calendar_date' => null])) }}">←</a>
+            <a class="btn btn-light" data-calendar-link="1" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $prevMonth, 'calendar_date' => null])) }}">←</a>
             <strong>{{ $calendarBase->translatedFormat('F Y') }}</strong>
-            <a class="btn btn-light" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $nextMonth, 'calendar_date' => null])) }}">→</a>
+            <a class="btn btn-light" data-calendar-link="1" href="{{ route('dashboard', array_merge(request()->query(), ['month' => $nextMonth, 'calendar_date' => null])) }}">→</a>
         </div>
         <div class="db-grid-4" style="grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin-bottom:8px; font-size:12px; color:#6b7280;">
             <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
@@ -127,7 +128,7 @@
                 @php($dateKey = $calendarBase->copy()->day($d)->toDateString())
                 @php($entry = $calendarEntries->get($dateKey))
                 @php($selected = $selectedCalendarDate === $dateKey)
-                <a href="{{ route('dashboard', array_merge(request()->query(), ['calendar_date' => $selected ? null : $dateKey])) }}" style="height:62px; border:1px solid {{ $selected ? '#4f46e5' : ($entry ? '#86efac' : '#e5e7eb') }}; background: {{ $selected ? '#eef2ff' : ($entry ? '#f0fdf4' : '#fff') }}; border-radius:8px; text-decoration:none; color:#111827; padding:4px; font-size:11px;">
+                <a data-calendar-link="1" href="{{ route('dashboard', array_merge(request()->query(), ['calendar_date' => $selected ? null : $dateKey])) }}" style="height:62px; border:1px solid {{ $selected ? '#4f46e5' : ($entry ? '#86efac' : '#e5e7eb') }}; background: {{ $selected ? '#eef2ff' : ($entry ? '#f0fdf4' : '#fff') }}; border-radius:8px; text-decoration:none; color:#111827; padding:4px; font-size:11px;">
                     <div style="font-weight:600;">{{ $d }}</div>
                     @if($entry)<div style="font-size:10px;">{{ number_format($entry['total'], 0, ',', ' ') }} ₸</div>@endif
                 </a>
@@ -389,6 +390,43 @@ function renderSelectionState() { const ids = selectedIds(); const monthly = sel
 function toggleAll(value) { document.querySelectorAll('.loan-check').forEach((el) => el.checked = value); renderSelectionState(); }
 function pushIdsToForm(form, ids) { form.querySelectorAll('input[name="loan_ids[]"]').forEach((el) => el.remove()); ids.forEach((id) => { const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = 'loan_ids[]'; hidden.value = id; form.appendChild(hidden); }); }
 function submitMass(type) { const ids = selectedIds(); if (!ids.length) { alert('Сначала выберите кредиты.'); return; } if (type === 'group') { const name = document.getElementById('groupNameInput').value.trim(); if (!name) { alert('Введите название группы.'); return; } const form = document.getElementById('mass-group-form'); document.getElementById('mass-group-name').value = name; pushIdsToForm(form, ids); form.submit(); return; } if (type === 'group-clear') { const form = document.getElementById('mass-clear-group-form'); pushIdsToForm(form, ids); form.submit(); return; } const form = document.getElementById(type === 'paid' ? 'mass-paid-form' : 'mass-close-form'); pushIdsToForm(form, ids); form.submit(); }
+let calendarLoading = false;
+async function updateCalendarPart(url) {
+    if (calendarLoading) return;
+    const current = document.getElementById('calendarCard');
+    if (!current) { window.location.href = url; return; }
+    calendarLoading = true;
+    current.classList.add('db-card-loading');
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        });
+        if (!response.ok) throw new Error('Bad response');
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const fresh = doc.getElementById('calendarCard');
+        if (!fresh) throw new Error('Calendar not found');
+        current.replaceWith(fresh);
+        window.history.pushState({}, '', url);
+    } catch (e) {
+        window.location.href = url;
+    } finally {
+        calendarLoading = false;
+    }
+}
+document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-calendar-link="1"]');
+    if (!link) return;
+    event.preventDefault();
+    updateCalendarPart(link.href);
+});
+window.addEventListener('popstate', () => {
+    window.location.reload();
+});
 document.querySelectorAll('.loan-check').forEach((el) => { el.addEventListener('change', (e) => { const target = e.currentTarget; const loanId = target.dataset.loanId || target.value; const checked = target.checked; document.querySelectorAll('.loan-check').forEach((peer) => { const peerLoanId = peer.dataset.loanId || peer.value; if (peerLoanId === loanId) peer.checked = checked; }); renderSelectionState(); }); });
 renderSelectionState();
 </script>
