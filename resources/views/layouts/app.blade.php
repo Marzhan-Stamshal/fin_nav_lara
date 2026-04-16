@@ -451,6 +451,36 @@
                 toggle.textContent = opened ? '✕' : '☰';
             });
         })();
+
+        (() => {
+            const routeName = "{{ request()->route()?->getName() }}";
+            const isDashboard = routeName === 'dashboard';
+            const isScenario = routeName.startsWith('scenarios.');
+            if (!isDashboard && !isScenario) return;
+
+            const key = `scroll-pos:${window.location.pathname}`;
+            const saved = sessionStorage.getItem(key);
+            if (saved) {
+                const y = Number(saved);
+                if (!Number.isNaN(y)) {
+                    window.scrollTo(0, y);
+                }
+                sessionStorage.removeItem(key);
+            }
+
+            document.addEventListener('submit', () => {
+                sessionStorage.setItem(key, String(window.scrollY));
+            }, true);
+
+            document.addEventListener('click', (event) => {
+                const link = event.target.closest('a');
+                if (!link) return;
+                const url = new URL(link.href, window.location.origin);
+                if (url.pathname === window.location.pathname) {
+                    sessionStorage.setItem(key, String(window.scrollY));
+                }
+            }, true);
+        })();
     </script>
 </body>
 

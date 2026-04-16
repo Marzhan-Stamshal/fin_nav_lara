@@ -16,6 +16,11 @@
     .sc-kpi.green { border-color: #a7f3d0; background: #ecfdf5; }
     .sc-kpi.green .label, .sc-kpi.green .value { color: #047857; }
     .sc-two { display: grid; gap: 12px; grid-template-columns: 1.3fr 1fr; }
+    .sc-method-note { border: 1px solid #dbeafe; border-radius: 10px; background: #f8fbff; padding: 10px; }
+    .sc-method-title { font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+    .sc-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+    .sc-chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: #eef2ff; color: #4338ca; font-size: 12px; font-weight: 700; }
+    .sc-btn-small { padding: 8px 10px; border-radius: 9px; font-size: 13px; font-weight: 700; }
     @media (max-width: 900px) {
         .sc-two { grid-template-columns: 1fr; }
         .sc-title { font-size: 26px; }
@@ -39,7 +44,25 @@
                 <input class="field" type="number" name="extra_one_time" min="0" step="0.01" value="{{ $extraOneTime }}">
             </label>
             <div style="display:flex;align-items:end;">
-                <button class="btn btn-primary" type="submit">Рассчитать</button>
+                <button class="btn btn-primary" type="submit">Рассчитать стратегии</button>
+            </div>
+        </div>
+        <div class="sc-grid" style="margin-top:10px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+            <div class="sc-method-note">
+                <div class="sc-method-title">Avalanche (по ставке)</div>
+                <div class="muted">Быстрее снижает переплату: сначала дорогие кредиты с высоким %.</div>
+            </div>
+            <div class="sc-method-note">
+                <div class="sc-method-title">Snowball (по сумме)</div>
+                <div class="muted">Проще психологически: сначала маленькие кредиты, быстрее уменьшается их количество.</div>
+            </div>
+            <div class="sc-method-note">
+                <div class="sc-method-title">Avalanche+ (по платежу)</div>
+                <div class="muted">Освобождает ежемесячный бюджет: сначала кредиты с самым большим платежом.</div>
+            </div>
+            <div class="sc-method-note">
+                <div class="sc-method-title">Текущий темп</div>
+                <div class="muted">Базовый сценарий без дополнительных платежей для сравнения.</div>
             </div>
         </div>
     </div>
@@ -47,13 +70,18 @@
     <div class="card">
         <h2 style="margin-top:0;">Выборочное закрытие кредитов</h2>
         <p class="muted" style="font-size:13px;">Отметьте нужные кредиты для расчёта сумм и пользы.</p>
+        <div class="sc-actions">
+            <button type="button" class="btn btn-light sc-btn-small" data-toggle-group="selective" data-check="1">Выбрать все</button>
+            <button type="button" class="btn btn-light sc-btn-small" data-toggle-group="selective" data-check="0">Снять выбор</button>
+            <span class="sc-chip">Выбрано: <span id="selectedCountChip" style="margin-left:4px;">{{ $selected->count() }}</span></span>
+        </div>
         <div class="sc-two">
             <div class="sc-loan-list">
                 @foreach ($summaries as $item)
                     @php($loan = $item['loan'])
                     <label class="sc-loan-item">
                         <div style="display:flex;gap:8px;align-items:flex-start;">
-                            <input type="checkbox" name="loan_ids[]" value="{{ $loan->id }}" {{ $selectedIds->contains((int)$loan->id) ? 'checked' : '' }}>
+                            <input type="checkbox" data-check-group="selective" name="loan_ids[]" value="{{ $loan->id }}" {{ $selectedIds->contains((int)$loan->id) ? 'checked' : '' }}>
                             <div>
                                 <div style="font-weight:700;color:#1f2937;">{{ $loan->title ?: $loan->bank_name }}</div>
                                 <div class="muted">{{ $loan->loan_type }} • {{ number_format($item['earlyPayoffNow'], 0, ',', ' ') }} ₸</div>
@@ -73,6 +101,12 @@
 
     <div class="card">
         <h2 style="margin-top:0;">Объединить кредиты в один</h2>
+        <p class="muted" style="font-size:13px; margin-top:-4px;">Выберите кредиты для объединения, задайте ставку и срок нового кредита, затем нажмите кнопку расчёта.</p>
+        <div class="sc-actions">
+            <button type="button" class="btn btn-light sc-btn-small" data-toggle-group="refi" data-check="1">Выбрать все</button>
+            <button type="button" class="btn btn-light sc-btn-small" data-toggle-group="refi" data-check="0">Снять выбор</button>
+            <span class="sc-chip">Для объединения: <span id="refiCountChip" style="margin-left:4px;">{{ $refiLoanIds->count() }}</span></span>
+        </div>
         <div class="sc-grid">
             <label>Ставка нового кредита (%)
                 <input class="field" type="number" name="refinance_rate" min="0.1" step="0.1" value="{{ $refiAnnualRate }}">
@@ -82,11 +116,11 @@
             </label>
         </div>
         <div style="margin-top:10px;" class="sc-loan-list">
-            @foreach ($summaries as $item)
+                @foreach ($summaries as $item)
                 @php($loan = $item['loan'])
                 <label class="sc-loan-item">
                     <div style="display:flex;gap:8px;align-items:flex-start;">
-                        <input type="checkbox" name="refi_loan_ids[]" value="{{ $loan->id }}" {{ $refiLoanIds->contains((int)$loan->id) ? 'checked' : '' }}>
+                        <input type="checkbox" data-check-group="refi" name="refi_loan_ids[]" value="{{ $loan->id }}" {{ $refiLoanIds->contains((int)$loan->id) ? 'checked' : '' }}>
                         <div>
                             <div style="font-weight:700;color:#1f2937;">{{ $loan->title ?: $loan->bank_name }}</div>
                             <div class="muted">{{ number_format($item['earlyPayoffNow'], 0, ',', ' ') }} ₸ • {{ $loan->interest_rate_annual ?? 0 }}%</div>
@@ -94,6 +128,9 @@
                     </div>
                 </label>
             @endforeach
+        </div>
+        <div style="margin-top:10px;">
+            <button class="btn btn-primary" type="submit">Рассчитать объединение</button>
         </div>
     </div>
 </form>
@@ -113,10 +150,16 @@
 
 @if(!empty($strategyResults))
 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-top:14px;">
+    @php($bestMonthsSaved = collect($strategyResults)->max('monthsSaved'))
     @foreach($strategyResults as $result)
         <div class="sc-result">
             <div class="sc-result-head">
-                <div style="font-weight:700;">{{ $result['name'] }}</div>
+                <div style="font-weight:700;">
+                    {{ $result['name'] }}
+                    @if($bestMonthsSaved > 0 && $result['monthsSaved'] === $bestMonthsSaved)
+                        <span style="margin-left:6px; font-size:11px; background:rgba(255,255,255,.2); border-radius:999px; padding:3px 8px;">Лучший по сроку</span>
+                    @endif
+                </div>
                 <div style="font-size:12px; opacity:.9;">{{ $result['description'] }}</div>
             </div>
             <div class="sc-result-body">
@@ -186,6 +229,30 @@
         </div>
     @empty
         <div class="muted">Сценарии пока не сохранены.</div>
-    @endforelse
+@endforelse
 </div>
+<script>
+function updateScenarioCounters() {
+    const selectedCount = document.querySelectorAll('input[data-check-group="selective"]:checked').length;
+    const refiCount = document.querySelectorAll('input[data-check-group="refi"]:checked').length;
+    const selectedCountChip = document.getElementById('selectedCountChip');
+    const refiCountChip = document.getElementById('refiCountChip');
+    if (selectedCountChip) selectedCountChip.textContent = String(selectedCount);
+    if (refiCountChip) refiCountChip.textContent = String(refiCount);
+}
+document.querySelectorAll('button[data-toggle-group]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const group = btn.dataset.toggleGroup;
+        const check = btn.dataset.check === '1';
+        document.querySelectorAll(`input[data-check-group="${group}"]`).forEach((el) => {
+            el.checked = check;
+        });
+        updateScenarioCounters();
+    });
+});
+document.querySelectorAll('input[data-check-group]').forEach((el) => {
+    el.addEventListener('change', updateScenarioCounters);
+});
+updateScenarioCounters();
+</script>
 @endsection

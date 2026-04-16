@@ -17,9 +17,27 @@
     </div>
 
     <div class="muted" style="margin-bottom:8px;">План платежей за месяц: <strong style="color:#111827;">{{ number_format($monthTotal, 0, ',', ' ') }} ₸</strong></div>
+    @php($banks = $groups->flatMap(fn($group) => $group['items']->pluck('bank_name'))->filter()->unique()->sort()->values())
 
     <form id="schedule-form" method="post" action="{{ route('payments.schedule.mark-paid') }}">
         @csrf
+        @if($banks->isNotEmpty())
+            <div class="flex" style="margin-bottom:10px;">
+                <label style="min-width:220px;">
+                    <span class="muted" style="display:block; margin-bottom:4px;">Быстрый выбор по банку</span>
+                    <select id="bankSelect" class="field">
+                        <option value="">Выберите банк</option>
+                        @foreach($banks as $bank)
+                            <option value="{{ $bank }}">{{ $bank }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div style="display:flex; align-items:flex-end;">
+                    <button type="button" class="btn btn-light" onclick="selectScheduleBank()">Выбрать кредиты банка</button>
+                </div>
+            </div>
+        @endif
+
         @foreach($groups as $group)
             @php($date = \Illuminate\Support\Carbon::parse($group['date']))
             <div style="border:1px solid #e5e7eb; border-radius:10px; padding:10px; margin-bottom:10px;">
@@ -34,7 +52,7 @@
                 @foreach($group['items'] as $loan)
                     <label class="flex" style="justify-content:space-between; border:1px solid #f1f5f9; border-radius:8px; padding:8px; margin-bottom:6px;">
                         <span>
-                            <input type="checkbox" class="schedule-check" name="loan_ids[]" value="{{ $loan->id }}" data-monthly="{{ $loan->monthly_payment }}">
+                            <input type="checkbox" class="schedule-check" name="loan_ids[]" value="{{ $loan->id }}" data-monthly="{{ $loan->monthly_payment }}" data-bank="{{ $loan->bank_name }}">
                             <strong>{{ $loan->title ?: $loan->bank_name }}</strong>
                             <span class="muted"> • {{ $loan->loan_type }}</span>
                         </span>
@@ -67,6 +85,19 @@ function refreshScheduleSummary() {
 }
 function toggleSchedule(value) {
     document.querySelectorAll('.schedule-check').forEach((el) => el.checked = value);
+    refreshScheduleSummary();
+}
+function selectScheduleBank() {
+    const bank = (document.getElementById('bankSelect')?.value || '').trim();
+    if (!bank) {
+        alert('Сначала выберите банк.');
+        return;
+    }
+    document.querySelectorAll('.schedule-check').forEach((el) => {
+        if ((el.dataset.bank || '') === bank) {
+            el.checked = true;
+        }
+    });
     refreshScheduleSummary();
 }
 document.querySelectorAll('.schedule-check').forEach((el) => el.addEventListener('change', refreshScheduleSummary));
